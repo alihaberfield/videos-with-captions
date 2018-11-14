@@ -25,7 +25,7 @@ const fileNames = [ '002958_ap01_DontBeAFallGuy',
   'B2003313_ap01_FlashBack',
   'B2003625_ap01_DressingAChicken' ];
 
-const AWS_VIDEO_BUCKET = 'https://s3.amazonaws.com/museumos-transcription/videos/';
+const AWS_VIDEO_BUCKET = `${process.env.PUBLIC_URL}/videos/`;
 const CAPTION_PATH = `${process.env.PUBLIC_URL}/vtt/`;
 
 
@@ -35,24 +35,21 @@ class App extends Component {
 
     this.state = {currentFile: fileNames[0]};
 
-    this.updateVideo = this.updateVideo.bind(this);
   }
 
-  updateVideo(fileName) {
-    this.setState(state => ({
-      currentFile: fileName
-    }));
-  }
 
   render() {
     return (
       <div className="App">
-          <VideoPlayer fileName={this.state.currentFile} />
-        <ul>
+        <p>
+          <select value={this.state.currentFile}
+              onChange={(e) => this.setState({currentFile: e.target.value})}>
           {
-            fileNames.map((fileName, index) => <li key={index} onClick={() => this.updateVideo(fileName)}>{fileName}</li>)
+            fileNames.map((fileName, index) => <option key={index} value={fileName}>{fileName}</option>)
           }
-        </ul>
+        </select>
+        </p>
+          <VideoPlayer fileName={this.state.currentFile} />
       </div>
     );
   }
@@ -62,8 +59,8 @@ const VideoPlayer = ({fileName}) => {
   let videoPath = `${AWS_VIDEO_BUCKET}${fileName}.mp4`;
   let captionPath = `${CAPTION_PATH}${fileName}.vtt`;
   return (
-    <video src={videoPath}>
-        <track kind="subtitles" label="English subtitles" src={captionPath} srcLang="en" default></track>
+    <video className='videoPlayer' src={videoPath} controls>
+        <track default kind="subtitles" label="English subtitles" src={captionPath} srcLang="en"></track>
     </video>
 )};
 
